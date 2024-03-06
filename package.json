@@ -12,5 +12,8 @@
   "license": "ISC",
   "devDependencies": {
     "@architect/architect": "^10.16.3"
+  },
+  "dependencies": {
+    "@architect/functions": "^7.0.0"
   }
 }
