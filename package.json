@@ -1,0 +1,16 @@
+{
+  "name": "aws-lite-dynamodb-marshalling",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Jesper Haug Karsrud",
+  "license": "ISC",
+  "devDependencies": {
+    "@architect/architect": "^10.16.3"
+  }
+}
