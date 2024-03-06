@@ -1,5 +1,12 @@
 # Reproduction for aws-lite marshalling errors
 
+This repo has two branches; main uses @architect/functions v7 and the @aws-sdk/*-dynamodb packages.
+[arc-fns-8](https://github.com/jkarsrud/aws-lite-dynamo-marshalling/tree/arc-fns-8) uses @architect/function v8 and @aws-lite.
+
+`index.test.mjs` has tests that should give enough information, and in `arc-fns-8` the tests are failing, but should be okay if a fix is made (somehow)
+
+## The issue:
+
 When passing an object where a field is a class instance, DynamoDB requires that class instance property to be converted into a Map.
 DynamoDB suggests doing this by passing `options.convertClassInstanceToMap=true`, but aws-lite and/or @architect/functions v8 has no way of passing this option.
 
