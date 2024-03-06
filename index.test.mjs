@@ -44,12 +44,13 @@ test("passing Model with metadata: new Metadata", async (ctx) => {
 
   try {
     await tables.data.put(event);
+    assert.ok("Did not throw!");
   } catch (ex) {
-    console.log(ex);
     assert(
       /convertClassInstanceToMap=true/.test(ex),
       "Throws error about converting class instance to map"
     );
+    assert.fail(ex);
   }
 
   try {
@@ -57,11 +58,12 @@ test("passing Model with metadata: new Metadata", async (ctx) => {
       TableName: tableName,
       Item: event,
     });
+    assert.ok("Did not throw!");
   } catch (ex) {
-    console.log(ex);
     assert(
       /convertClassInstanceToMap=true/.test(ex),
       "Throws error about converting class instance to map"
     );
+    assert.fail(ex);
   }
 });
