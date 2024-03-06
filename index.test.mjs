@@ -4,19 +4,22 @@ import sandbox from "@architect/sandbox";
 import arc from "@architect/functions";
 import { marshall } from "@aws-sdk/util-dynamodb";
 
-class ModelMeta {
+class Metadata {
   constructor(metadata) {
+    if (metadata.timestamp == null)
+      throw TypeError("Missing required field 'timestamp'");
+
     Object.assign(this, metadata);
   }
 }
 
-class Model {
+class Event {
   constructor(data, metadata) {
     this.PK = data.id;
     this.SK = "A";
 
     this.data = data;
-    this.metadata = new ModelMeta(metadata);
+    this.metadata = new Metadata(metadata);
   }
 }
 
@@ -25,17 +28,15 @@ test("passing Model with metadata: new Metadata", async (ctx) => {
     await sandbox.end();
   });
 
-  ctx.mock.timers.enable({ apis: ["Date"] });
-
   await sandbox.start({ quiet: true });
 
-  const model = new Model(
+  const event = new Event(
     {
       id: "1234",
       name: "Axol",
     },
     {
-      time: Date.now(),
+      timestamp: Date.now(),
     }
   );
 
@@ -46,7 +47,7 @@ test("passing Model with metadata: new Metadata", async (ctx) => {
     tables._doc.put(
       {
         TableName: tableName,
-        Item: model,
+        Item: event,
       },
       (err) => {
         assert(
@@ -59,13 +60,13 @@ test("passing Model with metadata: new Metadata", async (ctx) => {
 
   await ctx.test("marshall without options throws", () => {
     assert.throws(() => {
-      marshall(model);
+      marshall(event);
     }, /Pass options.convertClassInstanceToMap=true/);
   });
 
   await ctx.test("marshall with options does not throw", () => {
     assert.doesNotThrow(() => {
-      marshall(model, {
+      marshall(event, {
         convertClassInstanceToMap: true,
       });
     }, /Pass options.convertClassInstanceToMap=true/);
@@ -77,11 +78,16 @@ test("passing Model with metadata: new Metadata", async (ctx) => {
       tables._db.putItem(
         {
           TableName: tableName,
-          Item: marshall(model, {
+          Item: marshall(event, {
             convertClassInstanceToMap: true,
           }),
         },
-        done
+        async () => {
+          const { PK, SK } = event;
+          const item = await tables.data.get({ PK, SK });
+          console.log(item);
+          done();
+        }
       );
     }
   );
